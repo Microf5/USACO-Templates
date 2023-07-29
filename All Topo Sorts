@@ -1,0 +1,30 @@
+// IDK why, but i needed a map to print everything out, maybe fix later ;;  
+
+
+map<int, char> idkwhythisworks;
+vector<int> in_deg;
+vector<vector<int>> constraints;
+void dfs(vector<int> &output, vector<bool> visited) {
+    bool isFinished = 1;
+    for (int i = 0; i < constraints.size(); i++) {
+        if (!in_deg[i] && !visited[i]) {
+            for (auto k : constraints[i]) {
+                in_deg[k]--;
+            }
+            output.push_back(i);
+
+            visited[i] = true;
+            dfs(output, visited);
+            visited[i] = false;
+            output.pop_back();
+            for (auto k : constraints[i])in_deg[k]++;
+            isFinished = 0;
+        }
+    }
+    if (isFinished) {
+        for (int i = 0; i < output.size(); i++) {
+            cout << idkwhythisworks[output[i]];
+        }
+        cout << endl;
+    }
+}
