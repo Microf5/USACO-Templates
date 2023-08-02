@@ -1,0 +1,65 @@
+struct point {
+	int x, y;
+	bool operator==(point a)const {
+		return x == a.x && y == a.y;
+	}
+};
+// To find orientation of ordered triplet (p1, p2, p3). 
+// The function returns following values 
+// 0 --> p, q and r are collinear 
+// 1 --> Clockwise 
+// 2 --> Counterclockwise
+int orientation(point p1, point p2, point p3)
+{
+	int val = (p2.y - p1.y) * (p3.x - p2.x) -
+		(p2.x - p1.x) * (p3.y - p2.y);
+
+	if (val == 0) return 0;  // collinear 
+
+	return (val > 0) ? 1 : 2; // clock or counterclock wise 
+}
+int distance(point a, point b)
+{
+	return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+}
+// returns the area, which is half the determinant
+double area(const vector<point>& P) {
+	int n = P.size();
+	double result = 0.0, x1, y1, x2, y2;
+	for (int i = 0; i < n; i++) {
+		x1 = P[i].x; x2 = P[(i + 1) % n].x;
+		y1 = P[i].y; y2 = P[(i + 1)%n].y;
+		result += (x1 * y2 - x2 * y1);
+	}
+	return fabs(result) / 2.0;
+}
+
+vector<point> Jarvis(vector<point>& p) {
+	auto k = min_element(p.begin(), p.end(), [](point a, point b) {
+		if( a.x != b.x)
+		return a.x < b.x;
+	return a.y < b.y;
+		});
+	int left = k - p.begin();
+	int now = left;
+	vector<point> ch;
+	
+	do {
+		ch.push_back(p[now]);
+		int next = (now + 1) % p.size();
+		for (int i = 0; i < p.size(); i++) {
+			if (orientation(p[now], p[i], p[next]) == 2)next = i;
+			else if (orientation(p[now], p[i], p[next]) == 0) {
+				if (distance(p[now], p[i]) > distance(p[now], p[next]))next = i;
+			}
+		}
+		now = next;
+	} while (now != left);
+	return ch;
+}
+bool insidePolygon(point m, const vector<point>& polygon) {
+	auto p2 = polygon;
+	p2.push_back(m);
+	auto ch = Jarvis(p2);
+	return ch == polygon;
+}
