@@ -1,0 +1,23 @@
+vector<int> rabin_karp(string& p, string& t) {
+	const int pr  = 53;
+	vector<long long> pow_p(max(t.size(),p.size())+1);
+	pow_p[0] = 1; const int m = 1e9 + 7;
+	for (int i = 1; i < pow_p.size(); i++) {
+		pow_p[i] = (pow_p[i - 1] * pr) % m;
+	}
+	
+	vector<long long> h(t.size() + 1);
+	for (int i = 0; i < t.size(); i++) {
+		h[i + 1] = (h[i] + t[i] * pow_p[i])%m;
+	}
+	long long hash_p = 0;
+	for (int i = 0; i < p.size(); i++) {
+		hash_p= (hash_p + p[i] * pow_p[i]) % m;
+	}
+	vector<int> res;
+	for (int i = 0; i <= (int)t.size() - (int)p.size(); i++) {
+		long long hash_cur = (m+h[i + p.size()]-h[i])%m;
+		if (hash_cur == (hash_p * pow_p[i]) % m)res.push_back(i);
+	}
+	return res;
+}
