@@ -1,0 +1,103 @@
+struct point {
+    int x, y;
+    bool operator<(const point& p)const { return x < p.x || (x == p.x && y < p.y); }
+    bool operator==(const point& p)const { return x == p.x && y == p.y; }
+    point(int _x, int _y) { x = _x; y = _y; }
+    point() { x = 0; y = 0; };
+};
+point operator-(const point& a, const point& b) {
+    return point(a.x - b.x, a.y - b.y);
+}
+struct vec {
+    int x, y;
+    vec(int _x, int _y) { x = _x; y = _y; };
+    vec(point p) { x = p.x; y = p.y; };
+    double norm_sq() { return x * x + y * y; }
+    double magnitude() { return sqrt(norm_sq()); }
+};
+
+int dot(vec a, vec b) {
+    return a.x * b.x + a.y * b.y;
+}
+
+int cross(vec a, vec b) {
+    return a.x * b.y - a.y * b.x;
+}
+
+int orientation(point p1, point p2, point p3)
+{
+    int val = (p2.y - p1.y) * (p3.x - p2.x) -
+        (p2.x - p1.x) * (p3.y - p2.y);
+
+    if (val == 0) return 0;  // collinear 
+
+    return (val > 0) ? 1 : 2; // clock or counterclock wise 
+}
+
+int distance(point a, point b)
+{
+    return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+}
+
+bool collinear(point p1, point p2, point p3) {
+    if (!orientation(p1, p2, p3))return true;
+    return false;
+}
+
+bool CCW(point p1, point p2, point p3) {
+    if (orientation(p1, p2, p3) == 2)return true;
+    return false;
+}
+
+point pivot; //lambda needs global vars
+
+vector<point> Graham(const vector<point>& p) {
+    auto pts = p;
+    if (p.empty())return {};
+    if (pts.size() <= 3) {
+        pts.push_back(pts.front());
+        return pts;
+    }
+    
+    //sort to find leftmost bottommost point (topmost also works, just modify the operator above)
+    sort(pts.begin(), pts.end());
+    //sort all points by their angle with the pivot
+    pivot = pts[0];
+    sort(pts.begin() + 1, pts.end(), [](const point& a, const point& b) {
+        //if it's ccw then a is a sharper angle than b
+        //we also need to check if they're just the same line
+        if (collinear(pivot, a, b))return distance(pivot, a) < distance(pivot, b);
+        return CCW(pivot, a, b);
+        });
+    vector<point> stac; //using a vec to simulate a stack
+    stac.push_back(pts.back());
+    stac.push_back(pts[0]);
+    stac.push_back( pts[1]);
+    int i = 2;
+    //basic idea of graham's
+    while (i < pts.size()) {
+        if (CCW(stac[stac.size() - 2], stac.back(), pts[i]))stac.push_back(pts[i++]);
+        else stac.pop_back();
+    }
+    return stac;
+}
+//returns angle ABC
+double angle(point a, point b, point c) {
+    vec v1(a - b);
+    vec v2(c - b);
+    int sign = orientation(a, b, c) == 2 ? 1 : -1;
+    return sign * acos(dot(v1, v2) / v1.magnitude() / v2.magnitude());
+}
+
+//winding number
+//works for both convex and concave polygons :)
+bool inPolygon(const point pt, const vector<point>& p) {
+    double sum = 0;
+    int n = p.size();
+    for (int i = 0; i < n - 1; i++) {
+        if (pt == p[i])return true;
+        sum += angle(p[i], pt, p[(i + 1)%n]);
+    }
+    double pis = 2 * PI;
+    return fabs(fabs(sum) - pis) < 1e-3;
+}
