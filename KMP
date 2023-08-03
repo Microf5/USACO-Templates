@@ -1,0 +1,23 @@
+void KMP_Preprocess(string& p) {
+	border.resize(p.size() + 1);
+	int n = p.size();
+	int i = 0; int j = -1;
+	border[0] = -1;
+	while (i < n) {
+		while (j >= 0 && p[j] != p[i])j = border[j];
+		i++; j++;
+		border[i] = j;
+	}
+}
+vector<int> KMP(string& p, string& t) {
+	vector<int> ans; int i = 0, j = 0;
+	while (i < t.size()) {
+		while (j >= 0 && t[i] != p[j])j = border[j];
+		i++; j++;
+		if (j == p.size()) {
+			ans.push_back(i - p.size());
+			j = border[j];
+		}
+	}
+	return ans;
+}
