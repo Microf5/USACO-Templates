@@ -1,0 +1,16 @@
+int bit[SIZE];
+int maxIdx;
+int read(int idx) {
+    int sum = 0;
+    while (idx) {
+        sum += bit[idx];
+        idx -= (idx & -idx); //add last flipped bit, equivalent to idx &= idx-1
+    }
+    return sum;
+}
+void update(int idx, int val) {
+    while (idx <= maxIdx) {
+        bit[idx] += val;
+        idx += (idx & -idx);
+    }
+}
