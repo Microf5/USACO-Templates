@@ -23,6 +23,19 @@ void update(int node, int start, int end, int idx, int val) {
 	segtree[node] = segtree[2 * node] + segtree[2 * node + 1];
 }
 
+void updateRange(int node, int start, int end, int left, int right, int val) {
+	if (right < start || left > end)return;
+	if (start == end) //i'm a leaf
+	{
+		segtree[node] += val;
+		return;
+	}
+	int mid = (start + end) / 2;
+	updateRange(node * 2, start, mid, left,right, val);
+	updateRange(node * 2+1, mid+1,end, left, right, val);
+	segtree[node] = segtree[2 * node] + segtree[2 * node + 1];
+}
+
 int query(int node, int start, int end, int left, int right) {
 	if (right < start || left > end)return 0;
 	if (start >= left && end <= right)return segtree[node];
