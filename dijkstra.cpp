@@ -1,6 +1,7 @@
+priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
 vector<long long> dists(n, -1);
     vector<int> prev(n, -1);
-    pq.push({ 0,0 });
+    pq.push({ 0,0 }); //edit second part if we want to start from a diff node :)
     dists[0] = 0;
     while (!pq.empty()) {
         auto fr = pq.top(); pq.pop();
