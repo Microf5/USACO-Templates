@@ -1,44 +1,59 @@
-int segtree[SIZE];
-void build(int node, int start, int end, const vector<int>& x) {
-	if (start == end) //i'm a leaf
-	{
-		segtree[node] = x[start];
-		return;
-	}
-	int mid = (start + end) / 2;
-	build(node * 2, start, mid, x);
-	build(node * 2 + 1, mid + 1, end, x);
-	segtree[node] = segtree[2 * node] + segtree[2 * node + 1];
-}
-void update(int node, int start, int end, int idx, int val) {
-	if (start == end) //i'm a leaf
-	{
-		segtree[node] += val;
-		return;
-	}
-	int mid = (start + end) / 2;
-	if (idx >= start && idx <= mid) update(node * 2, start, mid, idx, val);
-	
-	else update(node * 2+1, mid+1,end, idx, val);
-	segtree[node] = segtree[2 * node] + segtree[2 * node + 1];
-}
+#include <iostream>
+#include <vector>
+#include <cstring>
+#include <algorithm>
+#include <string>
+#include <unordered_map>
+#include <map>
+#include <set>
+#include <queue>
+#include <fstream>
+using namespace std;
+vector<long long> segtree;
+int size = 1;
+void init(int n){
 
-void updateRange(int node, int start, int end, int left, int right, int val) {
-	if (right < start || left > end)return;
-	if (start == end) //i'm a leaf
-	{
-		segtree[node] += val;
-		return;
-	}
-	int mid = (start + end) / 2;
-	updateRange(node * 2, start, mid, left,right, val);
-	updateRange(node * 2+1, mid+1,end, left, right, val);
-	segtree[node] = segtree[2 * node] + segtree[2 * node + 1];
+    while(size < n)size *=2;
+    segtree.resize(2*size,0);
 }
+void update(int i, int val, int x, int lx, int rx) {
+    if (rx-lx==1) //i'm a leaf
+    {
+        segtree[x] = val;
+        return;
+    }
+    int mid = (lx + rx) / 2;
+    if(i < mid)update(i,val,2*x+1,lx,mid);
+    else update(i,val,2*x+2,mid,rx);
+    segtree[x] = segtree[2 * x+1] + segtree[2 * x + 2];
+}
+long long query(int l, int r, int x, int lx, int rx) {
+    if (l >=rx || lx >= r)return 0;
+    if (lx >= l && rx <= r)return segtree[x];
+    int mid = (lx+rx) / 2;
+    return query(l,r,2*x+1,lx,mid) + query(l,r,2*x+2,mid,rx);
+}
+int main(){
+    int n,m; cin >> n >> m;
+    vector<int> start(n);
+    init(n);
+    for(int i = 0; i < n; i++){
+        cin >> start[i];
+        update(i,start[i],0,0,size);
+    }
 
-int query(int node, int start, int end, int left, int right) {
-	if (right < start || left > end)return 0;
-	if (start >= left && end <= right)return segtree[node];
-	int mid = (start + end) / 2;
-	return query(node * 2, start, mid, left, right) + query(node * 2 + 1, mid + 1, end, left, right);
+    for(int i = 0; i < m; i++){
+        int x; cin >> x;
+
+
+        if(x==1){
+            int i,v; cin >> i >> v;
+            update(i,v,0,0,size);
+        }
+        else{
+            int l,r; cin >> l >> r;
+
+            cout << query(l,r,0,0,size) <<endl;
+        }
+    }
 }
