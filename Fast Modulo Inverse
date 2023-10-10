@@ -1,0 +1,15 @@
+const int N = 3e5+5;
+    int inv[N];
+    inv[1] = 1;
+    for (int i = 2; i < N; i++) inv[i] = 1LL*(MOD-MOD/i)*inv[MOD % i] % MOD;
+//when you want to do ans/=i, do ans = 1LL*ans*inv[i]/MOD :)
+//Why does this find the inverses?
+//𝑝=𝑖⋅⌊𝑝/𝑖⌋+(𝑝%𝑖) 
+//so 0=𝑖⋅⌊𝑝/𝑖⌋+(𝑝%𝑖) mod p
+//BUT - p%i is actually less than i! 
+//So, if we've calclulated up to i, we know inv[p%i]!
+// From this, we take out the inverse of p%i to get
+//1 ≡ 𝑖⋅(−⌊𝑝/𝑖⌋⋅inv[𝑝%𝑖])mod𝑝
+//now we can clearly find the inverse of i!
+//inv[i] = (-(p/i)*inv[p%i])%p
+//rewording, inv[i] = (mod-mod/i) * inv[mod % i] % mod!
