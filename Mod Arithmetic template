@@ -13,6 +13,31 @@ int mul(int a,int b){
     return (a*1LL * b)%MOD;
 }
 OR
+
+//Int version 
+int euclid(int a, int b, int &x, int &y) {
+	if (!b) return x = 1, y = 0, a;
+	ll d = euclid(b, a % b, y, x);
+	return y -= a/b * x, d;
+}
+const ll mod = 17; // change to something else
+struct Mod {
+	int x;
+	Mod(int xx) : x(int) {}
+	Mod operator+(Mod b) { return Mod((x + b.x) % mod); }
+	Mod operator-(Mod b) { return Mod((x - b.x + mod) % mod); }
+	Mod operator*(Mod b) { return Mod((x * b.x) % mod); }
+	Mod operator/(Mod b) { return *this * invert(b); }
+	Mod invert(Mod a) {
+		int x, y, g = euclid(a.x, mod, x, y);
+		return Mod((x + mod) % mod);
+	}
+	Mod operator^(int e) {
+		if (!e) return Mod(1);
+		Mod r = *this ^ (e / 2); r = r * r;
+		return e&1 ? *this * r : r;
+	}
+};
 /**
  * Author: Lukas Polacek
  * Date: 2009-09-28
