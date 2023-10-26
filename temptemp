@@ -1,0 +1,53 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+#include <algorithm>
+#include <string>
+#include <unordered_map>
+#include <map>
+#include <set>
+#include <stack>
+#include <queue>
+#include <bitset>
+#include <fstream>
+using namespace std;
+const int N = 1e5+5;
+using ll = long long;
+ll euclid(ll a, ll b, ll &x, ll &y) {
+    if (!b) return x = 1, y = 0, a;
+    ll d = euclid(b, a % b, y, x);
+    return y -= a/b * x, d;
+}
+ll mod = 10e9+7; // change to something else
+struct Mod {
+    ll x;
+    Mod(ll xx) : x(xx) {}
+    Mod operator+(Mod b) { return Mod((x + b.x) % mod); }
+    Mod operator-(Mod b) { return Mod((x - b.x + mod) % mod); }
+    Mod operator*(Mod b) { return Mod((x * b.x) % mod); }
+    Mod operator/(Mod b) { return *this * invert(b); }
+    Mod invert(Mod a) {
+        ll x, y, g = euclid(a.x, mod, x, y);
+        return Mod((x + mod) % mod);
+    }
+};
+long long pow(Mod a, long long p) {
+    Mod ans = 1;
+    while(p){
+        p/=2;
+        a = a * a;
+        if(p&1)ans = ans * a;
+    }
+    return ans.x; }
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    int t; cin >>t;
+    while(t--){
+        long long x,y,z; cin >> x >> y >> z;
+        //mod--;
+        long long d = pow(Mod(y),z);
+        //mod++;
+        cout << pow(Mod(x), d) << endl;
+    }
+}
