@@ -1,0 +1,50 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+#include <algorithm>
+#include <string>
+#include <climits>
+#include <unordered_map>
+#include <map>
+#include <set>
+#include <stack>
+#include <queue>
+#include <bitset>
+#include <fstream>
+#include <cmath>
+using namespace std;
+vector<vector<int>> adj;
+vector<int> colour;
+int cyc = 0;
+void dfs(int v, int prev) {
+    if (colour[v] == 1) {
+        cyc++;
+        //colour[v] = 2;
+        return;
+    }
+    colour[v] = 1;
+    for (int u : adj[v]) {
+        if (u == prev || colour[u]==2) continue;
+
+        dfs(u, v);
+    }
+    colour[v] = 2;
+}
+
+int main() {
+    int n,m; cin >> n >> m;
+    adj.resize(n);
+    colour.resize(n);
+    vector<vector<int>> adj2(n);
+    for(int i =0 ;i < m; i++){
+        int a,b;cin>>a>>b;a--,b--;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+    for(int i = 0; i < n; i++){
+        if(!colour[i]){
+            dfs(i,-1);
+        }
+    }
+    cout << cyc << endl;
+}
