@@ -20,7 +20,7 @@ void union_sets(int a, int b) {
         size[a] += size[b];
     }
 }
-//STRUCT VERSION DOWN HERE
+//STRUCT VERSION DOWN HERE REMEMBER TO INITIALIZE EACH STRUCT!!!!!
 
 struct uf{
     static const int MAXN=105;
