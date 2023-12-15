@@ -1,0 +1,19 @@
+const int LOG = 17;
+const int MAXN = 100001;
+vector<int> stuff(MAXN);
+int dp[MAXN][LOG];
+int depth[MAXN];
+void init() {
+	for (int i = 0; i < MAXN; i++)dp[i][0] = stuff[i];
+	for (int i = 1; i < LOG; i++) {
+		for (int j = 0; j + (1 << i) < MAXN; j++) {
+			dp[j][i] = min(dp[j][i - 1], dp[j + (1 << i - 1)][i - 1]);
+		}
+	}
+}
+int rangeSum(int l, int r) {
+	int len = r - l + 1;
+	int j = 0;
+	while ((1 << (j + 1)) <= len)j++;
+	return min(dp[l][j], dp[r - (1 << j) + 1][j]);
+}
