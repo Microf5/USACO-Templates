@@ -1,0 +1,29 @@
+const int LOG = 18;
+const int MAXN = 200001;
+vector<vector<int>> nodules(MAXN);
+int dp[MAXN][LOG];
+int depth[MAXN];
+void dfs(int a) {
+	for (int k : nodules[a]) {
+		depth[k] = depth[a] + 1;
+		if (depth[k] != -1)continue;
+		dp[k][0] = a;
+		for (int j = 1; j < LOG; j++) dp[k][j] = dp[dp[k][j - 1]][j - 1];
+		dfs(k);
+	}
+}
+int lca(int a, int b) {
+	if (depth[a] < depth[b])swap(a, b);
+	int k = depth[a] - depth[b]; //binlift up
+	for (int j = 0; j < LOG; j++) if (k & (1 << j))a = dp[a][j];
+	if (a == b)return a;
+	for (int j = LOG - 1; j >= 0; j--) {
+		//go until it's not a shared ancestor, then all after that (including the one that's currently not the same) are not ancestors, if we sum all of them it's 2^n-1, aka 1 less than our actual lca
+		if (dp[a][j] != dp[b][j]) {
+			a = dp[a][j];
+			b = dp[b][j];
+		}
+	}
+	return dp[a][0];
+
+}
