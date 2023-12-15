@@ -15,5 +15,5 @@ int rangeSum(int l, int r) {
 	int len = r - l + 1;
 	int j = 0;
 	while ((1 << (j + 1)) <= len)j++;
-	return min(dp[l][j], dp[r - (1 << j) + 1][j]);
+	return min(dp[l][j], dp[r - (1 << j) + 1][j]); //don't care about overlap, so we can just do big sweeps instead of classic log(n) like segtree :)
 }
